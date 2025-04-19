@@ -15,10 +15,10 @@ getConnection()
 
 app.post('/webhook', async (c) => {
   const config: line.ClientConfig = {
-    channelAccessToken: c.env.CHANNEL_ACCESS_TOKEN
+    channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN!
   }
   const client = new line.messagingApi.MessagingApiClient(config)
-  line.middleware({ channelSecret: c.env.CHANNEL_SECRET })
+  line.middleware({ channelSecret: process.env.CHANNEL_SECRET! })
 
   const events: line.WebhookEvent[] = await c.req.json().then((data) => data.events)
 
