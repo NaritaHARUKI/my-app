@@ -5,8 +5,8 @@ import { getConnection } from './db.js'
 import 'dotenv/config'
 
 type Configs = {
-  LINE_CHANNEL_ACCESS_TOKEN: string;
-  LINE_CHANNEL_SECRET: string;
+  CHANNEL_ACCESS_TOKEN: string;
+  CHANNEL_SECRET: string;
 };
 
 const app = new Hono<{ Bindings: Configs }>()
@@ -15,10 +15,10 @@ getConnection()
 
 app.post('/webhook', async (c) => {
   const config: line.ClientConfig = {
-    channelAccessToken: c.env.LINE_CHANNEL_ACCESS_TOKEN,
+    channelAccessToken: c.env.CHANNEL_ACCESS_TOKEN
   }
   const client = new line.messagingApi.MessagingApiClient(config)
-  line.middleware({ channelSecret: c.env.LINE_CHANNEL_SECRET })
+  line.middleware({ channelSecret: c.env.CHANNEL_SECRET })
 
   const events: line.WebhookEvent[] = await c.req.json().then((data) => data.events)
 
