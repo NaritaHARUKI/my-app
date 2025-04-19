@@ -1,7 +1,8 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import * as line from '@line/bot-sdk'
-import { getConnection } from './db.js';
+import { getConnection } from './db.js'
+import 'dotenv/config'
 
 type Configs = {
   LINE_CHANNEL_ACCESS_TOKEN: string;
