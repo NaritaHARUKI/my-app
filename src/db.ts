@@ -14,6 +14,6 @@ const pool = mysql.createPool({
 export const getConnection = async () => {
   const connection = await pool.getConnection()
   console.log("Connecting with user:", process.env.DB_USERNAME)
-  console.log(`[DB] Connected to ${process.env.DB_HOST}:${process.env.DB_PORT} as ${process.env.DB_USERNAMER}`)
+  console.log(`[DB] Connected to ${process.env.DB_HOST}:${process.env.DB_PORT} as ${process.env.DB_USERNAME}`)
   return connection
 }
