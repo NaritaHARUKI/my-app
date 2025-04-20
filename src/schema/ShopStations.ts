@@ -1,10 +1,10 @@
-import { int, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
+import { int, mysqlTable } from 'drizzle-orm/mysql-core'
 
-export const shopStaions = mysqlTable('users_stations', (table) => {
+export const shopStaions = mysqlTable('shop_stations', (table) => {
   return {
-    shopId: int('shopId').primaryKey(),
+    shopId: int('shopId'),
     stationId: int('stationId'),
   }
 })
 
-export type UserStaions = typeof shopStaions
+export type ShopStaions = typeof shopStaions
