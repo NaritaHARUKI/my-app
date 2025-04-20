@@ -16,7 +16,7 @@ const routes = async (message: string, lineId: string): Promise<string> => {
         case 'お店を登録する':
             return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
         case 'お店を確認する':
-            return 'Goodbye! Have a great day!'
+            return ShopController(message, lineId, SHOP_STATUS.SHOW)
         case '商品を登録する':
             return 'Hello! How can I help you today?'
     }

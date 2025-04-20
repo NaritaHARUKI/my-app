@@ -3,7 +3,7 @@ import { DB } from "../db.js"
 import { status } from "../schema/Status.js"
 import { shops } from "../schema/Shop.js"
 import STATION_DATA from "../station-data.js"
-import { shopStaions } from "../schema/ShopStations.js"
+import { shopStations } from "../schema/ShopStations.js"
 
 export const SHOP_STATUS = {
     INITIALIZE: 'initialize',
@@ -13,6 +13,7 @@ export const SHOP_STATUS = {
     SEARCH_STATION: 'search_station',
     REGISTER_STATION: 'register_station',
     COMPLETE: 'complete',
+    SHOW: 'show',
 }
 
 const ShopController = async (message: string, lineId: string, currentStatus: string):Promise<string> => {
@@ -40,7 +41,6 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
 
             return `お店の名前「${message}」を登録しました。次にお店の住所を登録します。住所を入力してください。`
         },
-
         register_address: async () => {
             await DB.update(shops)
                 .set({ address: message })
@@ -157,7 +157,7 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             if (!shopId) return 'お店の情報が見つかりませんでした。'
             const stationIds = _validate(message).data as number[]
             await Promise.all(stationIds.map(async (stationId) => {
-                await DB.insert(shopStaions)
+                await DB.insert(shopStations)
                     .values({
                         shopId,
                         stationId: stationId,
@@ -178,7 +178,42 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
 お店の登録が完了しました。
 お店の情報は、「お店の情報を確認する」で確認できます。
             `
+        },
+        show: async () => {
+            const shop = await DB
+                .select()
+                .from(shops)
+                .innerJoin(shopStations, eq(shops.id, shopStations.shopId))
+                .where(eq(shops.lineId, lineId))
+                .execute()
+
+            console.log(shop)
+        
+            if (shop.length === 0) return '登録されているお店はまだありません。'
+        
+            const stationNames = shop
+                .map((row) => {
+                    const stationId = row.shop_stations.stationId
+                    const found = STATION_DATA.find(st => st.id === stationId)
+                    return found?.station_name
+                })
+                .filter((v, i, self) => self.indexOf(v) === i)
+                .join(', ')
+        
+            const shopData = shop[0].shops
+        
+            console.log(shopData, stationNames)
+            if (!shopData) return 'お店の情報が見つかりませんでした。'
+            return `
+        -----------------------
+        店名：${shopData.name}
+        住所：${shopData.address ?? '未登録'}
+        URL：${shopData.url ?? '未登録'}
+        最寄駅：${stationNames}
+        -----------------------
+            `
         }
+             
     }
 
     console.log(`[ShopController] lineId: ${lineId}, currentStatus: ${currentStatus}, message: ${message}`)
