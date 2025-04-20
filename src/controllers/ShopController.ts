@@ -12,7 +12,7 @@ export const SHOP_STATUS = {
     REGISTER_STATION: 'register_station',
 }
 
-const ShopController = async (message: string, lineId: string, currentStatus: string) => {
+const ShopController = async (message: string, lineId: string, currentStatus: string):Promise<string> => {
     const actions = {
         initialize: async () => {
             await DB.update(status)

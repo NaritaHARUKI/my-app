@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import * as line from '@line/bot-sdk'
 import { getConnection } from './db.js'
 import 'dotenv/config'
+import routes from './routes/route.js'
 
 type Configs = {
   CHANNEL_ACCESS_TOKEN: string;
@@ -47,10 +48,13 @@ const textEventHandler = async (
   }
 
   const { replyToken, message: { text } = {} } = event;
+  if (!replyToken || !text || !event.source.userId) return
+
+  const replyText = await routes(text, event.source.userId)
 
   const response: line.TextMessage = {
     type: 'text',
-    text: `${text}`,
+    text: replyText,
   }
 
   const replyMessageRequest: line.messagingApi.ReplyMessageRequest = {

@@ -10,7 +10,7 @@ type Status = {
     merchandise_status: string;
 }
 
-const routes = async (message: string, lineId: string) => {
+const routes = async (message: string, lineId: string): Promise<string> => {
 
     switch (message) {
         case 'お店を登録する':
