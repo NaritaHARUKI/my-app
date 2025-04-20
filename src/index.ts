@@ -25,17 +25,17 @@ app.post('/webhook', async (c) => {
   await Promise.all(
     events.map(async (event: line.WebhookEvent) => {
       try {
-        await textEventHandler(client, event);
+        await textEventHandler(client, event)
       } catch (err: unknown) {
         if (err instanceof Error) {
-          console.error(err);
+          console.error(err)
         }
-        return c.status(500);
+        return c.status(500)
       }
     }),
-  );
+  )
 
-  return c.status(200);
+  return c.status(200)
 })
 
 const textEventHandler = async (
@@ -51,12 +51,12 @@ const textEventHandler = async (
   const response: line.TextMessage = {
     type: 'text',
     text: `${text}`,
-  };
+  }
 
   const replyMessageRequest: line.messagingApi.ReplyMessageRequest = {
     replyToken: replyToken,
     messages: [response],
-  };
+  }
 
   await client.replyMessage(replyMessageRequest)
 }
