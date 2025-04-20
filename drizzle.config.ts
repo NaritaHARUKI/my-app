@@ -9,6 +9,7 @@ export default defineConfig({
     './src/schema/**/Status.ts',
     './src/schema/**/User.ts',
     './src/schema/**/UserStations.ts',
+    './src/schema/**/ShopStations.ts',
   ],
   dialect: 'mysql',
   dbCredentials: {
