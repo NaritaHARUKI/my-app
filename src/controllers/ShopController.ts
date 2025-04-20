@@ -61,7 +61,7 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
                 .execute()
 
             await DB.update(status)
-                .set({ shopStatus: SHOP_STATUS.REGISTER_STATION })
+                .set({ shopStatus: SHOP_STATUS.SEARCH_STATION})
                 .where(eq(status.lineId, lineId))
                 .execute()
 
