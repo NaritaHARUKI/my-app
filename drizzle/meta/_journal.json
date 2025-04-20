@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1745126554439,
+      "tag": "0000_colossal_silver_samurai",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1745126766070,
+      "tag": "0001_yielding_romulus",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1745126836624,
+      "tag": "0002_breezy_kingpin",
+      "breakpoints": true
+    }
+  ]
+}

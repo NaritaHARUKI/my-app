@@ -1,15 +1,17 @@
-import 'dotenv/config'
-import type { Config } from 'drizzle-kit'
+import 'dotenv/config';
+import { defineConfig } from 'drizzle-kit';
 
-export default {
-  schema: './src/schema',
-  out: './drizzle/migrations',
-  driver: 'mysql2',
+export default defineConfig({
+  out: './drizzle',
+  schema: [
+    './src/schema/**/Merchandise.ts',
+    './src/schema/**/Shop.ts',
+    './src/schema/**/Status.ts',
+    './src/schema/**/User.ts',
+    './src/schema/**/UserStations.ts',
+  ],
+  dialect: 'mysql',
   dbCredentials: {
-    host: process.env.DB_HOST!,
-    port: Number(process.env.DB_PORT!) || 3306,
-    user: process.env.DB_USERNAME!,
-    password: process.env.DB_PASSWORD!,
-    database: process.env.DB_NAME!,
+    url: process.env.DATABASE_URL!,
   },
-} satisfies Config
+});

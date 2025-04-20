@@ -1,6 +1,6 @@
 import { int, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 
-export const shops = mysqlTable('status', (table) => {
+export const shops = mysqlTable('shops', (table) => {
   return {
     id: int('id').primaryKey().autoincrement(),
     lineId: varchar('lineId', { length: 255 }),
