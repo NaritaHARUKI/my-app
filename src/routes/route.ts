@@ -6,8 +6,8 @@ import ShopController, { SHOP_STATUS } from "../controllers/ShopController.js";
 
 type Status = {
     lineId: string;
-    shop_status: string;
-    merchandise_status: string;
+    shopStatus: string;
+    merchandiseStatus: string;
 }
 
 const routes = async (message: string, lineId: string): Promise<string> => {
@@ -22,7 +22,7 @@ const routes = async (message: string, lineId: string): Promise<string> => {
     }
     
     const currentStatus = await checkStatus(lineId)
-    return await ShopController(message, lineId, currentStatus.shop_status)
+    return await ShopController(message, lineId, currentStatus.shopStatus)
 }
 
 export default routes
@@ -44,14 +44,14 @@ const checkStatus = async (lineId: string): Promise<Status> => {
         
         await DB.insert(status).values({
             lineId: lineId,
-            shop_status: '',
-            merchandise_status: '',
+            shopStatus: '',
+            merchandiseStatus: '',
         }).execute()
 
         return {
             lineId: lineId,
-            shop_status: '',
-            merchandise_status: '',
+            shopStatus: '',
+            merchandiseStatus: '',
         }
     }
 

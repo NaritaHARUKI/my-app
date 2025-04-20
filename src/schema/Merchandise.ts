@@ -6,11 +6,11 @@ export const merchandises = mysqlTable('merchandises', (table) => {
     id: varchar('id', { length: 255 }).primaryKey(),
     lineId: varchar('lineId', { length: 255 }),
     name: varchar('name', { length: 255 }),
-    img_path: varchar('img_path', { length: 255 }),
+    imgPath: varchar('img_path', { length: 255 }),
     price: int('price'),
     stock: int('stock'),
     description: varchar('description', { length: 255 }),
-    is_locked: boolean('is_locked').default(false),
+    isLocked: boolean('is_locked').default(false),
   }
 })
 
