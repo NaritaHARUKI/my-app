@@ -133,6 +133,7 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
         }
     }
 
+    console.log(`[ShopController] lineId: ${lineId}, currentStatus: ${currentStatus}, message: ${message}`)
     return await actions[currentStatus as keyof typeof actions]()
 }
 
