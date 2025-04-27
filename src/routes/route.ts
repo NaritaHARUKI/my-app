@@ -3,6 +3,13 @@ import { status } from "../schema/Status.js";
 import { DB } from "../db.js";
 import { users } from "../schema/User.js";
 import ShopController, { SHOP_STATUS } from "../controllers/ShopController.js";
+import MerchandiseController, { MERCHANDISE_STATUS } from "../controllers/MerchandiseController.js";
+
+export type RouteResult =
+  | { type: 'text'; text: string }
+  | { type: 'flex'; altText: string; contents: any }
+
+export type RouteResults = RouteResult[]
 
 type Status = {
     lineId: string;
@@ -10,15 +17,15 @@ type Status = {
     merchandiseStatus: string;
 }
 
-const routes = async (message: string, lineId: string): Promise<string> => {
+const routes = async (message: string, lineId: string): Promise<RouteResult | RouteResults> => {
 
     switch (message) {
         case 'お店を登録する':
             return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
         case 'お店を確認する':
-            return ShopController(message, lineId, SHOP_STATUS.SHOW)
+            return await ShopController(message, lineId, SHOP_STATUS.SHOW)
         case '商品を登録する':
-            return 'Hello! How can I help you today?'
+            return await MerchandiseController(message, lineId, MERCHANDISE_STATUS.INITIALIZE)
     }
     
     const currentStatus = await checkStatus(lineId)

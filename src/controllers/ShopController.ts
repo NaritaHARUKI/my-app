@@ -4,6 +4,7 @@ import { status } from "../schema/Status.js"
 import { shops } from "../schema/Shop.js"
 import STATION_DATA from "../station-data.js"
 import { shopStations } from "../schema/ShopStations.js"
+import type { RouteResult } from "../routes/route.js"
 
 export const SHOP_STATUS = {
     INITIALIZE: 'initialize',
@@ -16,15 +17,15 @@ export const SHOP_STATUS = {
     SHOW: 'show',
 }
 
-const ShopController = async (message: string, lineId: string, currentStatus: string):Promise<string> => {
-    const actions = {
+const ShopController = async (message: string, lineId: string, currentStatus: string):Promise<RouteResult> => {
+    const actions: Record<string, () => Promise<RouteResult>> = {
         initialize: async () => {
             await DB.update(status)
                 .set({ shopStatus: SHOP_STATUS.REGISTER_NAME })
                 .where(eq(status.lineId, lineId))
                 .execute()
 
-            return 'お店の名前を登録します。名前を入力してください。'
+            return { type: 'text', text: 'お店の名前を登録します。名前を入力してください。' }
         },
         register_name: async () => {
             await DB.insert(shops)
@@ -39,7 +40,7 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
                 .where(eq(status.lineId, lineId))
                 .execute()
 
-            return `お店の名前「${message}」を登録しました。次にお店の住所を登録します。住所を入力してください。`
+            return { type: 'text', text: `お店の名前「${message}」を登録しました。次にお店の住所を登録します。住所を入力してください。` }
         },
         register_address: async () => {
             await DB.update(shops)
@@ -52,7 +53,7 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
                 .where(eq(status.lineId, lineId))
                 .execute()
 
-            return `お店の住所「${message}」を登録しました。次にお店のURLを登録します。URLを入力してください。ない場合は「なし」と入力してください。`
+            return { type: 'text', text: `お店の住所「${message}」を登録しました。次にお店のURLを登録します。URLを入力してください。ない場合は「なし」と入力してください。` }
         },
         register_url: async () => {
             await DB.update(shops)
@@ -61,14 +62,11 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
                 .execute()
 
             await DB.update(status)
-                .set({ shopStatus: SHOP_STATUS.SEARCH_STATION})
+                .set({ shopStatus: SHOP_STATUS.SEARCH_STATION })
                 .where(eq(status.lineId, lineId))
                 .execute()
 
-            return `お店のURL「${message}」を登録しました。次にお店の最寄り駅を登録します。登録したい最寄駅を入力してください。複数選択したい場合は改行して送信して下さい。
-例）
-名古屋
-栄`
+            return { type: 'text', text: `お店のURL「${message}」を登録しました。次にお店の最寄り駅を登録します。登録したい最寄駅を入力してください。複数選択したい場合は改行して送信して下さい。\n例）\n名古屋\n栄` }
         },
         search_station: async () => {
             const submittedStations = message.split('\n').map(s => s.trim()).filter(s => s !== '')
@@ -79,24 +77,26 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
                 })
             })
 
-            if (findStation.length === 0) return `最寄駅の情報が見つかりませんでした。もう一度入力してください。`
+            if (findStation.length === 0) return { type: 'text', text: '最寄駅の情報が見つかりませんでした。もう一度入力してください。' }
     
-
             await DB.update(status)
                 .set({ shopStatus: SHOP_STATUS.REGISTER_STATION })
                 .where(eq(status.lineId, lineId))
                 .execute()
-    return `
+
+            return {
+                type: 'text',
+                text: `
 ${findStation.length}件の駅が見つかりました。
 -----------------------
 ${findStation.map((station) => {
-    return `
+                    return `
     id：${station.id}
     駅名：${station.station_name}
     路線名：${station.line_name}
     都道府県名：${station.prefecture}
     `
-}).join('\n')}
+                }).join('\n')}
 -----------------------
 上記の中から、登録したい最寄駅の駅名、またはidを送信してください。複数選択したい場合は改行して送信して下さい。
 例）
@@ -107,6 +107,7 @@ ${findStation.map((station) => {
 1
 2
 `
+            }
         },
         register_station: async () => {
             const _validate = (message: string) => {
@@ -144,18 +145,18 @@ ${findStation.map((station) => {
             const result = _validate(message)
 
             if (!result.ok) {
-                return `
+                return { type: 'text', text: `
 以下の駅名は登録できませんでした。
 もう一度入力してください。
 -----------------------
 ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
 -----------------------
-                `
+                ` }
             }
 
             const shopId = (await DB.select().from(shops).where(eq(shops.lineId, lineId)).limit(1).execute())[0].id
-            if (!shopId) return 'お店の情報が見つかりませんでした。'
-            const stationIds = _validate(message).data as number[]
+            if (!shopId) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
+            const stationIds = result.data as number[]
             await Promise.all(stationIds.map(async (stationId) => {
                 await DB.insert(shopStations)
                     .values({
@@ -170,14 +171,14 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
                 .where(eq(status.lineId, lineId))
                 .execute()
 
-            return `
+            return { type: 'text', text: `
 お店の最寄駅を以下で登録しました。
 -----------------------
 駅名：${(result.data as number[]).map(_getStationName).join(',')}
 -----------------------
 お店の登録が完了しました。
 お店の情報は、「お店の情報を確認する」で確認できます。
-            `
+            ` }
         },
         show: async () => {
             const shop = await DB
@@ -186,10 +187,8 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
                 .innerJoin(shopStations, eq(shops.id, shopStations.shopId))
                 .where(eq(shops.lineId, lineId))
                 .execute()
-
-            console.log(shop)
         
-            if (shop.length === 0) return '登録されているお店はまだありません。'
+            if (shop.length === 0) return { type: 'text', text: '登録されているお店はまだありません。' }
         
             const stationNames = shop
                 .map((row) => {
@@ -201,19 +200,20 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
                 .join(', ')
         
             const shopData = shop[0].shops
-        
-            console.log(shopData, stationNames)
-            if (!shopData) return 'お店の情報が見つかりませんでした。'
-            return `
-        -----------------------
-        店名：${shopData.name}
-        住所：${shopData.address ?? '未登録'}
-        URL：${shopData.url ?? '未登録'}
-        最寄駅：${stationNames}
-        -----------------------
-            `
+            if (!shopData) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
+
+            return {
+                type: 'text',
+                text: `
+-----------------------
+店名：${shopData.name}
+住所：${shopData.address ?? '未登録'}
+URL：${shopData.url ?? '未登録'}
+最寄駅：${stationNames}
+-----------------------
+                `
+            }
         }
-             
     }
 
     console.log(`[ShopController] lineId: ${lineId}, currentStatus: ${currentStatus}, message: ${message}`)

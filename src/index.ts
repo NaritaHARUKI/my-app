@@ -50,16 +50,11 @@ const textEventHandler = async (
   const { replyToken, message: { text } = {} } = event;
   if (!replyToken || !text || !event.source.userId) return
 
-  const replyText = await routes(text, event.source.userId)
-
-  const response: line.TextMessage = {
-    type: 'text',
-    text: replyText,
-  }
+  const res = await routes(text, event.source.userId)
 
   const replyMessageRequest: line.messagingApi.ReplyMessageRequest = {
     replyToken: replyToken,
-    messages: [response],
+    messages: Array.isArray(res) ? res : [res],
   }
 
   await client.replyMessage(replyMessageRequest)
