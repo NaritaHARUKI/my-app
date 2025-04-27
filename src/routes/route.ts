@@ -29,7 +29,16 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     }
     
     const currentStatus = await checkStatus(lineId)
-    return await ShopController(message, lineId, currentStatus.shopStatus)
+
+    if (currentStatus.shopStatus !== SHOP_STATUS.COMPLETE) {
+        return await ShopController(message, lineId, currentStatus.shopStatus)
+    }
+
+    if (currentStatus.shopStatus === SHOP_STATUS.COMPLETE && currentStatus.merchandiseStatus !== MERCHANDISE_STATUS.COMPLETE) {
+        return await MerchandiseController(message, lineId, currentStatus.merchandiseStatus)
+    }
+
+    return { type: 'text', text: 'ニコニコ☺️' }
 }
 
 export default routes
