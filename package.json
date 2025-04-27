@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsx build src/index.ts",
+    "build": "tsc",
     "drizzle:generate": "pnpx drizzle-kit generate --driver mysql2 --config ./drizzle/drizzle.config.ts",
     "drizzle:push": "drizzle-kit push:pg --config=./drizzle/drizzle.config.ts",
     "drizzle:introspect": "drizzle-kit introspect:pg --config=./drizzle/drizzle.config.ts"
