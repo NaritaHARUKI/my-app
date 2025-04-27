@@ -43,14 +43,27 @@ const textEventHandler = async (
   client: line.messagingApi.MessagingApiClient,
   event: line.WebhookEvent,
 ): Promise<line.MessageAPIResponseBase | undefined> => {
-  if (event.type !== 'message' || event.message.type !== 'text') {
+  if (event.type !== 'message') {
     return
   }
 
-  const { replyToken, message: { text } = {} } = event;
-  if (!replyToken || !text || !event.source.userId) return
 
-  const res = await routes(text, event.source.userId)
+  const { replyToken, message } = event
+  if (!replyToken || !message || !event.source.userId) return
+
+  const getMessage = () => {
+    if (message.type === 'text') {
+      return message.text
+    }
+    
+    if (message.type === 'image') {
+      return message.id
+    }
+
+    return ''
+  }
+
+  const res = await routes(getMessage(), event.source.userId)
 
   const replyMessageRequest: line.messagingApi.ReplyMessageRequest = {
     replyToken: replyToken,

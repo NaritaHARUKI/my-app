@@ -121,8 +121,35 @@ const MerchandiseController = async (message: string, lineId: string, currentSta
 
 export default MerchandiseController
 
+async function getMessageContent(messageId: string): Promise<Buffer | null> {
+    const url = `https://api-data.line.me/v2/bot/message/${messageId}/content`
+    const accessToken = process.env.CHANNEL_ACCESS_TOKEN!
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        })
+
+        if (response.ok) {
+            const buffer = await response.arrayBuffer()
+            return Buffer.from(buffer)
+        } else {
+            console.error('Failed to retrieve content:', response.status)
+            return null
+        }
+    } catch (error) {
+        console.error('Error fetching content:', error)
+        return null
+    }
+}
+
+
 const createMerchandiseFlexMessage = async (lineId: string) => {
     const merchandise = await DB.select().from(merchandises).where(eq(merchandises.lineId, lineId)).limit(1).execute()
+    const image = await getMessageContent(merchandise[0].imgPath!)
     const shopData = await DB.select().from(shops).where(eq(shops.lineId, lineId)).limit(1).execute()
     const stationData = await DB.select().from(shopStations).where(eq(shopStations.shopId, shopData[0].id)).execute()
 
@@ -134,7 +161,7 @@ const createMerchandiseFlexMessage = async (lineId: string) => {
         type: "bubble",
         hero: {
             type: "image",
-            url: merchandise[0].imgPath,
+            url: merchandise[0].imgPath!,
             size: "full",
             aspectRatio: "20:13",
             aspectMode: "cover",
