@@ -76,36 +76,28 @@ const MerchandiseController = async (message: string, lineId: string, currentSta
 
             return { type: 'text', text: `在庫数「${stock}個」を登録しました。次に商品の画像パス(URL)を入力してください。` }
         },
-        register_image: async (): Promise<RouteResult> => {
+        register_image: async (): Promise<RouteResults> => {
             await DB.update(merchandises)
                 .set({ imgPath: message })
                 .where(eq(merchandises.lineId, lineId))
                 .execute()
 
             await DB.update(status)
-                .set({ merchandiseStatus: MERCHANDISE_STATUS.COMPLETE })
-                .where(eq(status.lineId, lineId))
-                .execute()
-
-            return { type: 'text', text: `画像パスを登録しました。商品登録が完了しました！🎉` }
-        },
-        complete: async (): Promise<RouteResults> => {
-            const flexMessage = await createMerchandiseFlexMessage(lineId)
-
-            await DB.update(status)
                 .set({ merchandiseStatus: MERCHANDISE_STATUS.CONFIRM_SEND })
                 .where(eq(status.lineId, lineId))
                 .execute()
+            
+            const flexMessage = await createMerchandiseFlexMessage(lineId)
 
-            return [
-                { type: 'flex', altText: '新しい商品が登録されました！', contents: flexMessage },
-                { type: 'text', text: 'この内容で送信してもよろしいですか？「はい」または「いいえ」でお答えください。' }
-            ]
+                return [
+                    { type: 'flex', altText: '新しい商品が登録されました！', contents: flexMessage },
+                    { type: 'text', text: 'この内容で送信してもよろしいですか？「はい」または「いいえ」でお答えください。' }
+                ]
         },
         confirm_send: async (): Promise<RouteResult> => {
             if (message.toLowerCase() === 'はい') {
                 await DB.update(status)
-                    .set({ merchandiseStatus: MERCHANDISE_STATUS.INITIALIZE })
+                    .set({ merchandiseStatus: MERCHANDISE_STATUS.COMPLETE })
                     .where(eq(status.lineId, lineId))
                     .execute()
 
