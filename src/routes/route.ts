@@ -16,6 +16,7 @@ type Status = {
     lineId: string;
     shopStatus: string;
     merchandiseStatus: string;
+    userStatus: string;
 }
 
 const routes = async (message: string, lineId: string): Promise<RouteResult | RouteResults> => {
@@ -39,6 +40,10 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
 
     if (currentStatus.shopStatus === SHOP_STATUS.COMPLETE && currentStatus.merchandiseStatus !== MERCHANDISE_STATUS.COMPLETE) {
         return await MerchandiseController(message, lineId, currentStatus.merchandiseStatus)
+    }
+
+    if(currentStatus.userStatus !== USER_STATUS.COMPLETE && currentStatus.userStatus !== '') {
+        return await UserController(message, lineId, currentStatus.userStatus)
     }
 
     return { type: 'text', text: 'ニコニコ☺️' }
@@ -71,6 +76,7 @@ const checkStatus = async (lineId: string): Promise<Status> => {
             lineId: lineId,
             shopStatus: '',
             merchandiseStatus: '',
+            userStatus: ''
         }
     }
 

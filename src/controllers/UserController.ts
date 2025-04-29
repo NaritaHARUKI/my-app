@@ -7,6 +7,7 @@ export const USER_STATUS = {
     INITIALIZE: 'initialize',
     SEARCH_STATION: 'search_station',
     REGISTER_STATION: 'register_station',
+    COMPLETE: 'complete',
 }
 
 const UserController = async (message: string, lineId: string, currentStatus: string): Promise<RouteResults | RouteResult> => {
@@ -100,7 +101,7 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             }
 
             const stationIds = result.data as number[]
-            await updateStatus(lineId, { userStatus: USER_STATUS.SEARCH_STATION })
+            await updateStatus(lineId, { userStatus: USER_STATUS.COMPLETE })
             await insertUser(lineId, stationIds)
 
             return { type: 'text', text: `
