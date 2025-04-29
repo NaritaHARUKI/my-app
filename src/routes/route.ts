@@ -4,6 +4,7 @@ import { DB } from "../db.js";
 import { users } from "../schema/User.js";
 import ShopController, { SHOP_STATUS } from "../controllers/ShopController.js";
 import MerchandiseController, { MERCHANDISE_STATUS } from "../controllers/MerchandiseController.js";
+import UserController, { USER_STATUS } from "../controllers/UserController.js";
 
 export type RouteResult =
   | { type: 'text'; text: string }
@@ -20,6 +21,8 @@ type Status = {
 const routes = async (message: string, lineId: string): Promise<RouteResult | RouteResults> => {
 
     switch (message) {
+        case '利用登録':
+            return await UserController(message, lineId, USER_STATUS.INITIALIZE)
         case 'お店を登録する':
             return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
         case 'お店を確認する':
