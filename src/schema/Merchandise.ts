@@ -1,4 +1,3 @@
-import { shop } from '@line/bot-sdk'
 import { boolean } from 'drizzle-orm/mysql-core'
 import { mysqlTable, varchar, int } from 'drizzle-orm/mysql-core'
 
@@ -13,6 +12,7 @@ export const merchandises = mysqlTable('merchandises', (table) => {
     stock: int('stock'),
     description: varchar('description', { length: 255 }),
     isLocked: boolean('is_locked').default(false),
+    flexMessage: varchar('flex_message', { length: 255 }),
   }
 })
 

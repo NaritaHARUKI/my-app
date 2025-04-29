@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { desc, eq, inArray } from "drizzle-orm"
 import { DB } from "../db.js"
 import { status } from "../schema/Status.js"
 import { merchandises } from "../schema/Merchandise.js"
@@ -6,6 +6,8 @@ import { shops } from "../schema/Shop.js"
 import { shopStations } from "../schema/ShopStations.js"
 import STATION_DATA from "../station-data.js"
 import type { RouteResult, RouteResults } from "../routes/route.js"
+import { use } from "hono/jsx"
+import { userStaions } from "../schema/UserStations.js"
 
 export const MERCHANDISE_STATUS = {
     INITIALIZE: 'initialize',
@@ -100,6 +102,25 @@ const MerchandiseController = async (message: string, lineId: string, currentSta
                     .set({ merchandiseStatus: MERCHANDISE_STATUS.COMPLETE })
                     .where(eq(status.lineId, lineId))
                     .execute()
+               
+                // 商品を登録
+                const flexMessage = await createMerchandiseFlexMessage(lineId)
+                await DB.update(merchandises).set({ flexMessage: JSON.stringify(flexMessage) })
+                
+                // 送信対象のユーザーを取得
+                const stationResult = await DB
+                    .select({ stationId: shopStations.stationId })
+                    .from(shops)
+                    .innerJoin(shopStations, eq(shops.id, shopStations.shopId))
+                    .where(eq(shops.lineId, lineId))
+                    .execute()
+
+                const stationIds = stationResult.map(station => station.stationId)
+                const userRecords = await DB.select().from(userStaions).where(inArray(userStaions.stationId, stationIds)).execute()
+                const userIds = userRecords.map(record => record.lineId)
+
+                console.log(userIds)
+                // この後Push通知をする　
 
                 return { type: 'text', text: '商品情報を送信しました📦✨' }
             } else if (message.toLowerCase() === 'いいえ') {
@@ -148,7 +169,13 @@ async function getMessageContent(messageId: string): Promise<Buffer | null> {
 
 
 const createMerchandiseFlexMessage = async (lineId: string) => {
-    const merchandise = await DB.select().from(merchandises).where(eq(merchandises.lineId, lineId)).limit(1).execute()
+    const merchandise = await DB
+      .select()
+      .from(merchandises)
+      .where(eq(merchandises.lineId, lineId))
+      .orderBy(desc(merchandises.id))
+      .limit(1)
+      .execute()
     const image = await getMessageContent(merchandise[0].imgPath!)
     const shopData = await DB.select().from(shops).where(eq(shops.lineId, lineId)).limit(1).execute()
     const stationData = await DB.select().from(shopStations).where(eq(shopStations.shopId, shopData[0].id)).execute()
@@ -161,7 +188,7 @@ const createMerchandiseFlexMessage = async (lineId: string) => {
         type: "bubble",
         hero: {
             type: "image",
-            url: merchandise[0].imgPath!,
+            url: image,
             size: "full",
             aspectRatio: "20:13",
             aspectMode: "cover",
