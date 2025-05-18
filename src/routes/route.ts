@@ -75,7 +75,7 @@ const checkStatus = async (lineId: string): Promise<Status> => {
     
     console.log('userStation', userStation)
 
-    const initialUser = currentStatus.length === 0 || userStation.length === 0
+    const initialUser = currentStatus.length === 0 || !userStation[0]?.stations
 
     // 完全新規ユーザーの場合、UsersテーブルにとStatusレコードを追加
     if (currentStatus.length === 0) {
