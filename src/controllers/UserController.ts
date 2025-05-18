@@ -119,9 +119,9 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             if (!user) return { type: 'text', text: 'ユーザー情報が見つかりませんでした。' }
 
             const text = `
-            あなたの登録情報は以下の通りです。
-            -----------------------
-            最寄駅：${Array.isArray(user.stations) ? user.stations.map(stationId => getStationName(stationId)).join(',') : ''}`
+あなたの登録情報は以下の通りです。
+-----------------------
+最寄駅：${Array.isArray(user.stations) ? user.stations.map(stationId => getStationName(stationId)).join(',') : ''}`
             return { type: 'text', text: text }
         }
        
