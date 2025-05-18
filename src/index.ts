@@ -39,33 +39,6 @@ app.post('/webhook', async (c) => {
   return c.status(200)
 })
 
-// app.post('/multicast', async (c) => {
-//   const config: line.ClientConfig = {
-//     channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN!
-//   }
-//   const client = new line.messagingApi.MessagingApiClient(config)
-
-//   const body = await c.req.json()
-//   const userIds: string[] = body.userIds
-//   const message: string = body.message
-
-//   if (!userIds || userIds.length === 0) {
-//     return c.json({ error: 'userIdsが必要です' }, 400)
-//   }
-
-//   try {
-//     await client.multicast({
-//       to: userIds,
-//       messages: [{ type: 'text', text: message }]
-//     })
-//     return c.json({ success: true })
-//   } catch (err) {
-//     console.error('Multicast送信エラー:', err)
-//     return c.json({ error: 'Multicast送信失敗' }, 500)
-//   }
-// })
-
-
 const textEventHandler = async (
   client: line.messagingApi.MessagingApiClient,
   event: line.WebhookEvent,

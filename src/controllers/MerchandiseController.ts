@@ -6,7 +6,6 @@ import { getShopByLineId, getShopStationIdsByLineId, shops } from "../schema/Sho
 import { shopStations } from "../schema/ShopStations.js"
 import STATION_DATA from "../station-data.js"
 import type { RouteResult, RouteResults } from "../routes/route.js"
-import { getUserLineIdByStationId } from "../schema/User.js"
 import * as line from '@line/bot-sdk'
 
 export const MERCHANDISE_STATUS = {
@@ -76,10 +75,10 @@ const MerchandiseController = async (message: string, lineId: string, currentSta
                 const stationIds = await getShopStationIdsByLineId(lineId)
                 if (!stationIds) return { type: 'text', text: '店舗情報が見つかりませんでした。' }
 
-                const userIds = await getUserLineIdByStationId(stationIds)
-                if (!userIds) return { type: 'text', text: 'ユーザー情報が見つかりませんでした。' }
+                // const userIds = await getUserLineIdByStationId(stationIds)
+                // if (!userIds) return { type: 'text', text: 'ユーザー情報が見つかりませんでした。' }
 
-                await pushMessage(userIds, flexMessage)
+                // await pushMessage(userIds, flexMessage)
                 
                 return { type: 'text', text: '商品情報を送信しました📦✨' }
             } else if (message.toLowerCase() === 'いいえ') {

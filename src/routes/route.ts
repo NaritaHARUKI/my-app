@@ -63,7 +63,6 @@ const checkStatus = async (lineId: string): Promise<Status> => {
     if (currentStatus.length === 0) {
         await DB.insert(users).values({
             lineId: lineId,
-            name: '',
         }).execute()
         
         await DB.insert(status).values({
