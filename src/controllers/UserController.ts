@@ -15,7 +15,7 @@ export const USER_STATUS = {
 const UserController = async (message: string, lineId: string, currentStatus: string): Promise<RouteResults | RouteResult> => {
     const actions: Record<string, () => Promise<RouteResults | RouteResult>> = {
         initialize: async () => {
-            await statusUpdate(lineId, { userStatus: USER_STATUS.SEARCH_STATION })
+            await statusUpdate(lineId, { user_status: USER_STATUS.SEARCH_STATION })
 
             return { type: 'text', text: '利用登録を開始します！受け取りたい駅名を送信してください！\n例）\n名古屋\n栄' }
         },
@@ -30,7 +30,7 @@ const UserController = async (message: string, lineId: string, currentStatus: st
 
             if (findStation.length === 0) return { type: 'text', text: '最寄駅の情報が見つかりませんでした。もう一度入力してください。' }
     
-            await statusUpdate(lineId, { userStatus: USER_STATUS.REGISTER_STATION })
+            await statusUpdate(lineId, { user_status: USER_STATUS.REGISTER_STATION })
 
             return {
                 type: 'text',
@@ -103,7 +103,7 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             }
 
             const stationIds = result.data as number[]
-            await statusUpdate(lineId, { userStatus: USER_STATUS.COMPLETE })
+            await statusUpdate(lineId, { user_status: USER_STATUS.COMPLETE })
             await userInsertUserStaions(lineId, stationIds)
 
             return { type: 'text', text: `
