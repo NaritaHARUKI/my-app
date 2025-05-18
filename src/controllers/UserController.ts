@@ -121,7 +121,8 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             const text = `
 あなたの登録情報は以下の通りです。
 -----------------------
-最寄駅：${Array.isArray(user.stations) ? user.stations.map(stationId => getStationName(stationId)).join(',') : ''}`
+最寄駅：${Array.isArray(user.stations) ? user.stations.map(stationId => getStationName(stationId)).join(',') : ''}
+`
             return { type: 'text', text: text }
         }
        

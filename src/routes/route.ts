@@ -25,7 +25,7 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
         case '駅を確認する':
             return await UserController(message, lineId, USER_STATUS.CONFIRM)
         case '駅を更新する':
-            return await UserController(message, lineId, USER_STATUS.REGISTER_STATION)
+            return await UserController(message, lineId, USER_STATUS.SEARCH_STATION)
         // case 'お店を登録する':
         //     return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
         // case 'お店を確認する':
