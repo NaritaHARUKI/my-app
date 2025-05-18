@@ -5,50 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1745126554439,
-      "tag": "0000_colossal_silver_samurai",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1745126766070,
-      "tag": "0001_yielding_romulus",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1745126836624,
-      "tag": "0002_breezy_kingpin",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1745129863805,
-      "tag": "0003_rainy_black_tarantula",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1745742051018,
-      "tag": "0004_closed_microchip",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1745936542656,
-      "tag": "0005_late_dracula",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1747574198055,
-      "tag": "0006_fixed_rogue",
+      "when": 1747574412164,
+      "tag": "0000_next_triton",
       "breakpoints": true
     }
   ]

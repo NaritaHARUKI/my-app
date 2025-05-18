@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "71a5ac99-0242-4a3a-b48c-a93df3e727da",
+  "id": "784155f0-b42b-4ce3-957f-3e5499280751",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "merchandises": {
@@ -9,20 +9,27 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
-        "lineId": {
-          "name": "lineId",
-          "type": "varchar(255)",
+        "shopId": {
+          "name": "shopId",
+          "type": "int",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
+        "price": {
+          "name": "price",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_receive_date": {
+          "name": "last_receive_date",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
@@ -35,34 +42,12 @@
           "notNull": false,
           "autoincrement": false
         },
-        "price": {
-          "name": "price",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "stock": {
-          "name": "stock",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
+        "notification_json": {
+          "name": "notification_json",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "is_locked": {
-          "name": "is_locked",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
         }
       },
       "indexes": {},
@@ -78,11 +63,70 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "shops": {
+      "name": "shops",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "station_id": {
+          "name": "station_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "shops_id": {
+          "name": "shops_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "status": {
       "name": "status",
       "columns": {
-        "lineId": {
-          "name": "lineId",
+        "line_id": {
+          "name": "line_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
@@ -106,10 +150,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "status_lineId": {
-          "name": "status_lineId",
+        "status_line_id": {
+          "name": "status_line_id",
           "columns": [
-            "lineId"
+            "line_id"
           ]
         }
       },
@@ -119,38 +163,100 @@
     "users": {
       "name": "users",
       "columns": {
-        "lineId": {
-          "name": "lineId",
+        "line_id": {
+          "name": "line_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "type": {
-          "name": "type",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "users_lineId": {
-          "name": "users_lineId",
+        "users_line_id": {
+          "name": "users_line_id",
           "columns": [
-            "lineId"
+            "line_id"
           ]
         }
       },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "users_stations": {
+      "name": "users_stations",
+      "columns": {
+        "line_id": {
+          "name": "line_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "station_id": {
+          "name": "station_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_stations_line_id_users_line_id_fk": {
+          "name": "users_stations_line_id_users_line_id_fk",
+          "tableFrom": "users_stations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "line_id"
+          ],
+          "columnsTo": [
+            "line_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "shop_stations": {
+      "name": "shop_stations",
+      "columns": {
+        "shop_id": {
+          "name": "shop_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "station_id": {
+          "name": "station_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shop_stations_shop_id_shops_id_fk": {
+          "name": "shop_stations_shop_id_shops_id_fk",
+          "tableFrom": "shop_stations",
+          "tableTo": "shops",
+          "columnsFrom": [
+            "shop_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraint": {}
     }
