@@ -71,7 +71,7 @@ const checkStatus = async (lineId: string): Promise<Status> => {
         .leftJoin(userStations, eq(users.line_Id, userStations.line_Id))
         .where(eq(users.line_Id, lineId))
         .limit(1)
-        .execute()
+        .execute() ?? []
     
     console.log('userStation', userStation)
 
