@@ -2,8 +2,6 @@ import { eq } from "drizzle-orm";
 import { status } from "../schema/Status.js";
 import { DB } from "../db.js";
 import { users } from "../schema/User.js";
-import ShopController, { SHOP_STATUS } from "../controllers/ShopController.js";
-import MerchandiseController, { MERCHANDISE_STATUS } from "../controllers/MerchandiseController.js";
 import UserController, { USER_STATUS } from "../controllers/UserController.js";
 
 export type RouteResult =
@@ -13,10 +11,9 @@ export type RouteResult =
 export type RouteResults = RouteResult[]
 
 type Status = {
-    lineId: string;
-    shopStatus: string;
-    merchandiseStatus: string;
-    userStatus: string;
+    line_id: string;
+    shop_status: string;
+    merchandise_status: string;
 }
 
 const routes = async (message: string, lineId: string): Promise<RouteResult | RouteResults> => {
@@ -24,27 +21,25 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     switch (message) {
         case '利用登録':
             return await UserController(message, lineId, USER_STATUS.INITIALIZE)
-        case 'お店を登録する':
-            return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
-        case 'お店を確認する':
-            return await ShopController(message, lineId, SHOP_STATUS.SHOW)
-        case '商品を登録する':
-            return await MerchandiseController(message, lineId, MERCHANDISE_STATUS.INITIALIZE)
+        // case 'お店を登録する':
+        //     return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
+        // case 'お店を確認する':
+        //     return await ShopController(message, lineId, SHOP_STATUS.SHOW)
+        // case '商品を登録する':
+        //     return await MerchandiseController(message, lineId, MERCHANDISE_STATUS.INITIALIZE)
     }
     
     const currentStatus = await checkStatus(lineId)
 
-    if (currentStatus.shopStatus !== SHOP_STATUS.COMPLETE) {
-        return await ShopController(message, lineId, currentStatus.shopStatus)
-    }
+    // if (currentStatus.shopStatus !== SHOP_STATUS.COMPLETE) {
+    //     return await ShopController(message, lineId, currentStatus.shopStatus)
+    // }
 
-    if (currentStatus.shopStatus === SHOP_STATUS.COMPLETE && currentStatus.merchandiseStatus !== MERCHANDISE_STATUS.COMPLETE) {
-        return await MerchandiseController(message, lineId, currentStatus.merchandiseStatus)
-    }
+    // if (currentStatus.shopStatus === SHOP_STATUS.COMPLETE && currentStatus.merchandiseStatus !== MERCHANDISE_STATUS.COMPLETE) {
+    //     return await MerchandiseController(message, lineId, currentStatus.merchandiseStatus)
+    // }
 
-    if(currentStatus.userStatus !== USER_STATUS.COMPLETE && currentStatus.userStatus !== '') {
-        return await UserController(message, lineId, currentStatus.userStatus)
-    }
+    console.log('currentStatus', currentStatus)
 
     return { type: 'text', text: 'ニコニコ☺️' }
 }
@@ -55,27 +50,26 @@ const checkStatus = async (lineId: string): Promise<Status> => {
     const currentStatus = await DB
         .select()
         .from(status)
-        .where(eq(status.lineId, lineId))
+        .where(eq(status.line_id, lineId))
         .limit(1)
         .execute()
 
     // 新規ユーザーの場合
     if (currentStatus.length === 0) {
         await DB.insert(users).values({
-            lineId: lineId,
+            line_Id: lineId,
         }).execute()
         
         await DB.insert(status).values({
-            lineId: lineId,
-            shopStatus: '',
-            merchandiseStatus: '',
+            line_id: lineId,
+            shop_status: '',
+            merchandise_status: '',
         }).execute()
 
         return {
-            lineId: lineId,
-            shopStatus: '',
-            merchandiseStatus: '',
-            userStatus: ''
+            line_id: lineId,
+            shop_status: '',
+            merchandise_status: '',
         }
     }
 

@@ -1,7 +1,5 @@
-import { updateStatus } from "../schema/Status.js"
 import STATION_DATA from "../station-data.js"
 import type { RouteResult, RouteResults } from "../routes/route.js"
-import { insertUser } from "../schema/User.js"
 
 export const USER_STATUS = {
     INITIALIZE: 'initialize',
@@ -13,8 +11,9 @@ export const USER_STATUS = {
 const UserController = async (message: string, lineId: string, currentStatus: string): Promise<RouteResults | RouteResult> => {
     const actions: Record<string, () => Promise<RouteResults | RouteResult>> = {
         initialize: async () => {
-            await updateStatus(lineId, { userStatus: USER_STATUS.SEARCH_STATION })
+            // await updateStatus(lineId, { userStatus: USER_STATUS.SEARCH_STATION })
 
+            // return { type: 'text', text: '利用登録を開始します！受け取りたい駅名を送信してください！\n例）\n名古屋\n栄' }
             return { type: 'text', text: '利用登録を開始します！受け取りたい駅名を送信してください！\n例）\n名古屋\n栄' }
         },
         search_station: async () => {
@@ -28,7 +27,7 @@ const UserController = async (message: string, lineId: string, currentStatus: st
 
             if (findStation.length === 0) return { type: 'text', text: '最寄駅の情報が見つかりませんでした。もう一度入力してください。' }
     
-            await updateStatus(lineId, { userStatus: USER_STATUS.REGISTER_STATION })
+            // await updateStatus(lineId, { userStatus: USER_STATUS.REGISTER_STATION })
 
             return {
                 type: 'text',
@@ -101,8 +100,8 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             }
 
             const stationIds = result.data as number[]
-            await updateStatus(lineId, { userStatus: USER_STATUS.COMPLETE })
-            await insertUser(lineId, stationIds)
+            // await updateStatus(lineId, { userStatus: USER_STATUS.COMPLETE })
+            // await insertUser(lineId, stationIds)
 
             return { type: 'text', text: `
 あなたの最寄駅を以下で登録しました。
