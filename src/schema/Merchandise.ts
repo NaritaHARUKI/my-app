@@ -1,7 +1,7 @@
 // Merchandise.ts
 import { mysqlTable, varchar, int } from 'drizzle-orm/mysql-core'
 import { relations } from 'drizzle-orm'
-import { merchandiseItems } from './merchandiseItems.ts'
+import { merchandiseItems } from './MerchandiseItems.ts'
 
 export const merchandises = mysqlTable('merchandises', (table) => {
   return {

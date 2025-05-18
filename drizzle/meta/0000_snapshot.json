@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "784155f0-b42b-4ce3-957f-3e5499280751",
+  "id": "a5f3f8ce-2a4b-4fd2-bbb9-abcbdf39bb6f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "merchandises": {
@@ -63,6 +63,65 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "merchandise_items": {
+      "name": "merchandise_items",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "merchandise_id": {
+          "name": "merchandise_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "bought_by": {
+          "name": "bought_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "merchandise_items_merchandise_id_merchandises_id_fk": {
+          "name": "merchandise_items_merchandise_id_merchandises_id_fk",
+          "tableFrom": "merchandise_items",
+          "tableTo": "merchandises",
+          "columnsFrom": [
+            "merchandise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "merchandise_items_id": {
+          "name": "merchandise_items_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "shops": {
       "name": "shops",
       "columns": {
@@ -114,6 +173,96 @@
       "compositePrimaryKeys": {
         "shops_id": {
           "name": "shops_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "shop_stations": {
+      "name": "shop_stations",
+      "columns": {
+        "shop_id": {
+          "name": "shop_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "station_id": {
+          "name": "station_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shop_stations_shop_id_shops_id_fk": {
+          "name": "shop_stations_shop_id_shops_id_fk",
+          "tableFrom": "shop_stations",
+          "tableTo": "shops",
+          "columnsFrom": [
+            "shop_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "shop_users": {
+      "name": "shop_users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "shop_id": {
+          "name": "shop_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "line_id": {
+          "name": "line_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shop_users_shop_id_shops_id_fk": {
+          "name": "shop_users_shop_id_shops_id_fk",
+          "tableFrom": "shop_users",
+          "tableTo": "shops",
+          "columnsFrom": [
+            "shop_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "shop_users_id": {
+          "name": "shop_users_id",
           "columns": [
             "id"
           ]
@@ -213,44 +362,6 @@
           ],
           "columnsTo": [
             "line_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "shop_stations": {
-      "name": "shop_stations",
-      "columns": {
-        "shop_id": {
-          "name": "shop_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "station_id": {
-          "name": "station_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "shop_stations_shop_id_shops_id_fk": {
-          "name": "shop_stations_shop_id_shops_id_fk",
-          "tableFrom": "shop_stations",
-          "tableTo": "shops",
-          "columnsFrom": [
-            "shop_id"
-          ],
-          "columnsTo": [
-            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
