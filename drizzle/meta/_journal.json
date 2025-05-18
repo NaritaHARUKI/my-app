@@ -43,6 +43,13 @@
       "when": 1745936542656,
       "tag": "0005_late_dracula",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1747574198055,
+      "tag": "0006_fixed_rogue",
+      "breakpoints": true
     }
   ]
 }
