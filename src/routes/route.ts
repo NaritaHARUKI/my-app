@@ -77,8 +77,6 @@ const checkStatus = async (lineId: string): Promise<Status> => {
         .where(eq(users.line_Id, lineId))
         .limit(1)
         .execute() ?? []
-    
-    console.log('userStation', userStation)
 
     const initialUser = currentStatus.length === 0 || !userStation[0]?.stations
 
@@ -102,7 +100,7 @@ const checkStatus = async (lineId: string): Promise<Status> => {
             line_id: lineId,
             shop_status: '',
             merchandise_status: '',
-            user_status: USER_STATUS.INITIALIZE,
+            user_status: currentStatus[0]?.user_status ?? '',
             initialize: true,
         }
     }
