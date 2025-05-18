@@ -72,6 +72,8 @@ const checkStatus = async (lineId: string): Promise<Status> => {
         .where(eq(users.line_Id, lineId))
         .limit(1)
         .execute()
+    
+    console.log('userStation', userStation)
 
     const initialUser = currentStatus.length === 0 || userStation.length === 0
 
@@ -99,5 +101,8 @@ const checkStatus = async (lineId: string): Promise<Status> => {
         }
     }
 
-    return currentStatus[0] as Status
+    return {
+        ...currentStatus[0],
+        initialize: false,
+    } as Status
 }
