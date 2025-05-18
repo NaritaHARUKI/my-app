@@ -1,6 +1,6 @@
 import { int, mysqlTable } from 'drizzle-orm/mysql-core'
 import { shops } from './Shop.ts'
-import { relations } from 'drizzle-orm'
+import { relations, type InferModel } from 'drizzle-orm'
 
 export const shopStations = mysqlTable('shop_stations', (table) => {
   return {
@@ -16,4 +16,4 @@ export const shopStationRelations = relations(shopStations, ({ one }) => ({
   }),
 }))
 
-export type ShopStations = typeof shopStations
+export type ShopStation = InferModel<typeof shopStations>

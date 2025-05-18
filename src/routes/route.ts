@@ -4,6 +4,8 @@ import { DB } from "../db.js";
 import { users } from "../schema/User.js";
 import UserController, { USER_STATUS } from "../controllers/UserController.js";
 import { userStations } from "../schema/UserStations.ts";
+import ShopController, { SHOP_STATUS } from "../controllers/ShopController.ts";
+import trimAtMark from "../controllers/hooks/trimAtMark.ts";
 
 export type RouteResult =
   | { type: 'text'; text: string }
@@ -27,8 +29,8 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
         case '駅を更新する':
             await statusUpdate(lineId, { user_status: USER_STATUS.INITIALIZE })
             return await UserController(message, lineId, USER_STATUS.INITIALIZE)
-        // case 'お店を登録する':
-        //     return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
+        case 'お店を登録する':
+            return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
         // case 'お店を確認する':
         //     return await ShopController(message, lineId, SHOP_STATUS.SHOW)
         // case '商品を登録する':
@@ -38,13 +40,13 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     const currentStatus = await checkStatus(lineId)
     console.log('currentStatus', currentStatus)
 
-    if(currentStatus.user_status !== USER_STATUS.COMPLETE) {
+    if(trimAtMark(currentStatus.user_status) !== USER_STATUS.COMPLETE) {
         return await UserController(message, lineId, currentStatus.user_status || USER_STATUS.INITIALIZE)
     }
 
-    // if (currentStatus.shopStatus !== SHOP_STATUS.COMPLETE) {
-    //     return await ShopController(message, lineId, currentStatus.shopStatus)
-    // }
+    if (trimAtMark(currentStatus.shop_status) !== SHOP_STATUS.COMPLETE) {
+        return await ShopController(message, lineId, currentStatus.shop_status)
+    }
 
     // if (currentStatus.shopStatus === SHOP_STATUS.COMPLETE && currentStatus.merchandiseStatus !== MERCHANDISE_STATUS.COMPLETE) {
     //     return await MerchandiseController(message, lineId, currentStatus.merchandiseStatus)
