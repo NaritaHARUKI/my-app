@@ -15,6 +15,7 @@ type Status = {
     line_id: string;
     shop_status: string;
     merchandise_status: string;
+    user_status: string;
     initialize?: boolean;
 }
 
@@ -37,6 +38,10 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
 
     if(currentStatus.initialize) {
         return await UserController(message, lineId, USER_STATUS.INITIALIZE)
+    }
+
+    if (currentStatus.user_status !== '') {
+        return await UserController(message, lineId, currentStatus.user_status)
     }
 
     // if (currentStatus.shopStatus !== SHOP_STATUS.COMPLETE) {
@@ -97,6 +102,7 @@ const checkStatus = async (lineId: string): Promise<Status> => {
             line_id: lineId,
             shop_status: '',
             merchandise_status: '',
+            user_status: USER_STATUS.INITIALIZE,
             initialize: true,
         }
     }
