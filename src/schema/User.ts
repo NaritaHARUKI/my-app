@@ -48,7 +48,7 @@ const userInsertUserStaions = async (lineId: string, stationIds: number[]): Prom
 
   // すでに登録されている駅を削除
   await DB.delete(userStations)
-  .where(and(eq(userStations.line_Id, lineId), inArray(userStations.station_id, stationIds)))
+  .where(eq(userStations.line_Id, lineId))
     .execute()
 
   await DB.insert(userStations).values(
