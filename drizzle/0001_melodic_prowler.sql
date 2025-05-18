@@ -1,0 +1,1 @@
+ALTER TABLE `status` ADD `user_status` varchar(255);

@@ -3,6 +3,7 @@ import { status } from "../schema/Status.js";
 import { DB } from "../db.js";
 import { users } from "../schema/User.js";
 import UserController, { USER_STATUS } from "../controllers/UserController.js";
+import { userStations } from "../schema/UserStations.ts";
 
 export type RouteResult =
   | { type: 'text'; text: string }
@@ -14,13 +15,16 @@ type Status = {
     line_id: string;
     shop_status: string;
     merchandise_status: string;
+    initialize?: boolean;
 }
 
 const routes = async (message: string, lineId: string): Promise<RouteResult | RouteResults> => {
 
     switch (message) {
-        case '利用登録':
-            return await UserController(message, lineId, USER_STATUS.INITIALIZE)
+        case '駅を確認する':
+            return await UserController(message, lineId, USER_STATUS.CONFIRM)
+        case '駅を更新する':
+            return await UserController(message, lineId, USER_STATUS.REGISTER_STATION)
         // case 'お店を登録する':
         //     return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
         // case 'お店を確認する':
@@ -30,6 +34,10 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     }
     
     const currentStatus = await checkStatus(lineId)
+
+    if(currentStatus.initialize) {
+        return await UserController(message, lineId, USER_STATUS.INITIALIZE)
+    }
 
     // if (currentStatus.shopStatus !== SHOP_STATUS.COMPLETE) {
     //     return await ShopController(message, lineId, currentStatus.shopStatus)
@@ -54,22 +62,40 @@ const checkStatus = async (lineId: string): Promise<Status> => {
         .limit(1)
         .execute()
 
-    // 新規ユーザーの場合
+    const userStation = await DB
+        .select({
+            user: users,
+            stations: userStations,
+          })
+        .from(users)
+        .leftJoin(userStations, eq(users.line_Id, userStations.line_Id))
+        .where(eq(users.line_Id, lineId))
+        .limit(1)
+        .execute()
+
+    const initialUser = currentStatus.length === 0 || userStation.length === 0
+
+    // 完全新規ユーザーの場合、UsersテーブルにとStatusレコードを追加
     if (currentStatus.length === 0) {
         await DB.insert(users).values({
             line_Id: lineId,
-        }).execute()
+        })
+        .execute()
         
         await DB.insert(status).values({
             line_id: lineId,
             shop_status: '',
             merchandise_status: '',
         }).execute()
+    }
 
+    // ユーザーが初期状態(=最寄駅の登録が一件もない)の場合
+    if(initialUser) {
         return {
             line_id: lineId,
             shop_status: '',
             merchandise_status: '',
+            initialize: true,
         }
     }
 

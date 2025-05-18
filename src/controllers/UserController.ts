@@ -1,19 +1,22 @@
 import STATION_DATA from "../station-data.js"
 import type { RouteResult, RouteResults } from "../routes/route.js"
+import { statusUpdate } from "../schema/Status.ts"
+import { userInsertUserStaions, usersGetUser } from "../schema/User.ts"
+import getStationName from "./hooks/getStaionName.ts"
 
 export const USER_STATUS = {
     INITIALIZE: 'initialize',
     SEARCH_STATION: 'search_station',
     REGISTER_STATION: 'register_station',
     COMPLETE: 'complete',
+    CONFIRM: 'confirm',
 }
 
 const UserController = async (message: string, lineId: string, currentStatus: string): Promise<RouteResults | RouteResult> => {
     const actions: Record<string, () => Promise<RouteResults | RouteResult>> = {
         initialize: async () => {
-            // await updateStatus(lineId, { userStatus: USER_STATUS.SEARCH_STATION })
+            await statusUpdate(lineId, { userStatus: USER_STATUS.SEARCH_STATION })
 
-            // return { type: 'text', text: '利用登録を開始します！受け取りたい駅名を送信してください！\n例）\n名古屋\n栄' }
             return { type: 'text', text: '利用登録を開始します！受け取りたい駅名を送信してください！\n例）\n名古屋\n栄' }
         },
         search_station: async () => {
@@ -27,7 +30,7 @@ const UserController = async (message: string, lineId: string, currentStatus: st
 
             if (findStation.length === 0) return { type: 'text', text: '最寄駅の情報が見つかりませんでした。もう一度入力してください。' }
     
-            // await updateStatus(lineId, { userStatus: USER_STATUS.REGISTER_STATION })
+            await statusUpdate(lineId, { userStatus: USER_STATUS.REGISTER_STATION })
 
             return {
                 type: 'text',
@@ -100,8 +103,8 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             }
 
             const stationIds = result.data as number[]
-            // await updateStatus(lineId, { userStatus: USER_STATUS.COMPLETE })
-            // await insertUser(lineId, stationIds)
+            await statusUpdate(lineId, { userStatus: USER_STATUS.COMPLETE })
+            await userInsertUserStaions(lineId, stationIds)
 
             return { type: 'text', text: `
 あなたの最寄駅を以下で登録しました。
@@ -111,6 +114,16 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
 商品情報をお待ちください！
             ` }
         },
+        confirm: async () => {
+            const user = await usersGetUser(lineId)
+            if (!user) return { type: 'text', text: 'ユーザー情報が見つかりませんでした。' }
+
+            const text = `
+            あなたの登録情報は以下の通りです。
+            -----------------------
+            最寄駅：${Array.isArray(user.stations) ? user.stations.map(stationId => getStationName(stationId)).join(',') : ''}`
+            return { type: 'text', text: text }
+        }
        
     }
 
