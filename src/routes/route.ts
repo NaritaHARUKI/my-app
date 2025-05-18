@@ -35,6 +35,7 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     }
     
     const currentStatus = await checkStatus(lineId)
+    console.log('currentStatus', currentStatus)
 
     if(currentStatus.initialize) {
         return await UserController(message, lineId, USER_STATUS.INITIALIZE)
@@ -51,8 +52,6 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     // if (currentStatus.shopStatus === SHOP_STATUS.COMPLETE && currentStatus.merchandiseStatus !== MERCHANDISE_STATUS.COMPLETE) {
     //     return await MerchandiseController(message, lineId, currentStatus.merchandiseStatus)
     // }
-
-    console.log('currentStatus', currentStatus)
 
     return { type: 'text', text: 'ニコニコ☺️' }
 }
