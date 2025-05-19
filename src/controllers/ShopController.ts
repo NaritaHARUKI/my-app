@@ -136,6 +136,8 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             if (!shopId) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
             const stationIds = result.data as number[]
 
+            console.log(`[ShopController] lineId: ${lineId}, shopId: ${shopId}, stationIds: ${stationIds}`)
+
             await shopInsertShopStations(shopId, stationIds)
             await statusUpdate(lineId, { shop_status: SHOP_STATUS.COMPLETE })
 
