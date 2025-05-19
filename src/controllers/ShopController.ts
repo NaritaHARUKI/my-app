@@ -1,5 +1,3 @@
-import { eq } from "drizzle-orm"
-import { DB } from "../db.js"
 import { status, statusUpdate } from "../schema/Status.js"
 import { shopGetShops, shopInsertShops, shopInsertShopStations, shops, shopUpdateShop } from "../schema/Shop.js"
 import STATION_DATA from "../station-data.js"
@@ -18,7 +16,7 @@ export const SHOP_STATUS = {
     SHOW: 'show',
 }
 
-const ShopController = async (message: string, lineId: string, currentStatus: string):Promise<RouteResult> => {
+const ShopController = async (message: string, lineId: string, currentStatus: string, id?: number):Promise<RouteResult> => {
     const actions: Record<string, () => Promise<RouteResult>> = {
         initialize: async () => {
             statusUpdate(lineId, { shop_status: SHOP_STATUS.REGISTER_NAME })
@@ -36,7 +34,7 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
         register_address: async () => {
             if (!currentStatus) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
             
-            const shopId = getEditingId(currentStatus)
+            const shopId = id || 0
             await shopUpdateShop(shopId,{ address: message })
 
             await statusUpdate(lineId, { shop_status: `${SHOP_STATUS.REGISTER_URL}@${shopId}` })
@@ -45,7 +43,7 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
         },
         register_url: async () => {
             if (!currentStatus) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
-            const shopId = getEditingId(currentStatus)
+            const shopId = id || 0
             await shopUpdateShop(shopId, { url: message })
             await statusUpdate(lineId, { shop_status: `${SHOP_STATUS.SEARCH_STATION}@${shopId}` })
 
@@ -134,7 +132,7 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
                 ` }
             }
 
-            const shopId = getEditingId(currentStatus)
+            const shopId = id || 0
             if (!shopId) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
             const stationIds = result.data as number[]
 

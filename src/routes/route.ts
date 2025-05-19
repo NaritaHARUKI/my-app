@@ -6,6 +6,7 @@ import UserController, { USER_STATUS } from "../controllers/UserController.js";
 import { userStations } from "../schema/UserStations.ts";
 import ShopController, { SHOP_STATUS } from "../controllers/ShopController.ts";
 import trimAtMark from "../controllers/hooks/trimAtMark.ts";
+import getEditingId from "../controllers/hooks/getEditingId.ts";
 
 export type RouteResult =
   | { type: 'text'; text: string }
@@ -38,14 +39,15 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     }
     
     const currentStatus = await checkStatus(lineId)
-    console.log('currentStatus', currentStatus)
+    console.log('currentStatus', currentStatus, trimAtMark(currentStatus.shop_status))
 
     if(trimAtMark(currentStatus.user_status) !== USER_STATUS.COMPLETE) {
         return await UserController(message, lineId, currentStatus.user_status || USER_STATUS.INITIALIZE)
     }
 
     if (trimAtMark(currentStatus.shop_status) !== SHOP_STATUS.COMPLETE) {
-        return await ShopController(message, lineId, currentStatus.shop_status)
+        const id = getEditingId(currentStatus.shop_status)
+        return await ShopController(message, lineId, currentStatus.shop_status, id)
     }
 
     // if (currentStatus.shopStatus === SHOP_STATUS.COMPLETE && currentStatus.merchandiseStatus !== MERCHANDISE_STATUS.COMPLETE) {
