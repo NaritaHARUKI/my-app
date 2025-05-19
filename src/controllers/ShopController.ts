@@ -169,6 +169,7 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
 店名：${shopData.name}
 住所：${shopData.address ?? '未登録'}
 URL：${shopData.url ?? '未登録'}
+説明：${shopData.description ?? '未登録'}
 最寄駅：${shop.shop_stations.map((station) => {
                     const stationId = station.station_id
                     const found = STATION_DATA.find(st => st.id === stationId)
