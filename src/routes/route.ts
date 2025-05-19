@@ -39,7 +39,6 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     }
     
     const currentStatus = await checkStatus(lineId)
-    console.log('a', trimAtMark(currentStatus.shop_status))
 
     if(trimAtMark(currentStatus.user_status) !== USER_STATUS.COMPLETE) {
         return await UserController(message, lineId, currentStatus.user_status || USER_STATUS.INITIALIZE)
@@ -47,6 +46,7 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
 
     if (trimAtMark(currentStatus.shop_status) !== SHOP_STATUS.COMPLETE) {
         const id = getEditingId(currentStatus.shop_status)
+        console.log('id', id)
         return await ShopController(message, lineId, trimAtMark(currentStatus.shop_status), id)
     }
 
