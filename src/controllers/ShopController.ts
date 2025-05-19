@@ -10,6 +10,7 @@ export const SHOP_STATUS = {
     REGISTER_URL: 'register_url',
     SEARCH_STATION: 'search_station',
     REGISTER_STATION: 'register_station',
+    REGISTER_DESCRIPTION: 'register_description',
     COMPLETE: 'complete',
     SHOW: 'show',
 }
@@ -135,16 +136,26 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             const stationIds = result.data as number[]
 
             await shopInsertShopStations(shopId, stationIds)
-            await statusUpdate(lineId, { shop_status: SHOP_STATUS.COMPLETE })
+            await statusUpdate(lineId, { shop_status: SHOP_STATUS.REGISTER_DESCRIPTION })
 
             return { type: 'text', text: `
 お店の最寄駅を以下で登録しました。
 -----------------------
 駅名：${(result.data as number[]).map(_getStationName).join(',')}
 -----------------------
-お店の登録が完了しました。
-お店の情報は、「お店の情報を確認する」で確認できます。
             ` }
+        },
+        register_description: async () => {
+            const shopId = id || 0
+            if (!shopId) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
+            await shopUpdateShop(shopId, { description: message })
+            await statusUpdate(lineId, { shop_status: SHOP_STATUS.COMPLETE })
+
+            return { type: 'text', text: `
+お店の説明「${message}」を登録しました。
+お店の登録が完了しました。
+お店の情報は、「お店を確認する」で確認できます。
+` }
         },
         show: async () => {
             const shops = await shopGetShops(lineId)
