@@ -39,7 +39,7 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
     }
     
     const currentStatus = await checkStatus(lineId)
-    console.log('currentStatus', currentStatus, trimAtMark(currentStatus.shop_status))
+    console.log('a', trimAtMark(currentStatus.shop_status))
 
     if(trimAtMark(currentStatus.user_status) !== USER_STATUS.COMPLETE) {
         return await UserController(message, lineId, currentStatus.user_status || USER_STATUS.INITIALIZE)
