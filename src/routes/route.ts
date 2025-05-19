@@ -46,7 +46,7 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
 
     if (trimAtMark(currentStatus.shop_status) !== SHOP_STATUS.COMPLETE) {
         const id = getEditingId(currentStatus.shop_status)
-        console.log('id', id)
+        console.log('id', id, currentStatus.shop_status)
         return await ShopController(message, lineId, trimAtMark(currentStatus.shop_status), id)
     }
 
