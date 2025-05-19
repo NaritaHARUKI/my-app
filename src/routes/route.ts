@@ -32,8 +32,8 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
             return await UserController(message, lineId, USER_STATUS.INITIALIZE)
         case 'お店を登録する':
             return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
-        // case 'お店を確認する':
-        //     return await ShopController(message, lineId, SHOP_STATUS.SHOW)
+        case 'お店を確認する':
+            return await ShopController(message, lineId, SHOP_STATUS.SHOW)
         // case '商品を登録する':
         //     return await MerchandiseController(message, lineId, MERCHANDISE_STATUS.INITIALIZE)
     }
@@ -46,7 +46,6 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
 
     if (trimAtMark(currentStatus.shop_status) !== SHOP_STATUS.COMPLETE) {
         const id = getEditingId(currentStatus.shop_status)
-        console.log('id', id, currentStatus.shop_status)
         return await ShopController(message, lineId, trimAtMark(currentStatus.shop_status), id)
     }
 

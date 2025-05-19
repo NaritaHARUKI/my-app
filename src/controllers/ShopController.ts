@@ -1,9 +1,7 @@
-import { status, statusUpdate } from "../schema/Status.js"
+import { statusUpdate } from "../schema/Status.js"
 import { shopGetShops, shopInsertShops, shopInsertShopStations, shops, shopUpdateShop } from "../schema/Shop.js"
 import STATION_DATA from "../station-data.js"
-import { shopStations } from "../schema/ShopStations.js"
 import type { RouteResult } from "../routes/route.js"
-import getEditingId from "./hooks/getEditingId.ts"
 
 export const SHOP_STATUS = {
     INITIALIZE: 'initialize',
@@ -60,7 +58,7 @@ const ShopController = async (message: string, lineId: string, currentStatus: st
 
             if (findStation.length === 0) return { type: 'text', text: '最寄駅の情報が見つかりませんでした。もう一度入力してください。' }
     
-            await statusUpdate(lineId, { shop_status: `${SHOP_STATUS.REGISTER_STATION}@${findStation.length}` })
+            await statusUpdate(lineId, { shop_status: `${SHOP_STATUS.REGISTER_STATION}@${id}` })
 
             return {
                 type: 'text',
@@ -136,8 +134,6 @@ ${result.data.map((station) => `駅名またはid：${station}`).join('\n')}
             if (!shopId) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
             const stationIds = result.data as number[]
 
-            console.log(`[ShopController] lineId: ${lineId}, shopId: ${shopId}, stationIds: ${stationIds}`)
-
             await shopInsertShopStations(shopId, stationIds)
             await statusUpdate(lineId, { shop_status: SHOP_STATUS.COMPLETE })
 
@@ -174,7 +170,6 @@ URL：${shopData.url ?? '未登録'}
             return { type: 'text', text: text.join('\n') }
         }
     }
-    console.log(`[ShopController] lineId: ${lineId}, currentStatus: ${currentStatus}, message: ${message}`)
     return await actions[currentStatus as keyof typeof actions]()
 }
 
