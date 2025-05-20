@@ -97,6 +97,19 @@ export const shopGetShops = async (lineId: string): Promise<{
   return Array.from(grouped.values())
 }
 
+export const shopValidateUser = async (lineId: string,shopId: number): Promise<boolean> => {
+  const editableShopIds = await DB
+    .select()
+    .from(shopUsers)
+    .where(eq(shopUsers.line_id, lineId))
+    .limit(1)
+    .execute()
+
+  const result = editableShopIds.filter((shop) => shop.shop_id === shopId)
+
+  return result.length > 0
+}
+
 export {
   shopInsertShops,
   shopUpdateShop,

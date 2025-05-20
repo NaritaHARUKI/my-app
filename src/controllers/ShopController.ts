@@ -1,7 +1,8 @@
 import { statusUpdate } from "../schema/Status.js"
-import { shopGetShops, shopInsertShops, shopInsertShopStations, shops, shopUpdateShop } from "../schema/Shop.js"
+import { shopGetShops, shopInsertShops, shopInsertShopStations, shops, shopUpdateShop, shopValidateUser } from "../schema/Shop.js"
 import STATION_DATA from "../station-data.js"
 import type { RouteResult } from "../routes/route.js"
+import { register } from "module"
 
 export const SHOP_STATUS = {
     INITIALIZE: 'initialize',
@@ -13,6 +14,8 @@ export const SHOP_STATUS = {
     REGISTER_DESCRIPTION: 'register_description',
     COMPLETE: 'complete',
     SHOW: 'show',
+    EDIT: 'edit',
+    REGISTER_EDIT: 'register_edit',
 }
 
 const ShopController = async (message: string, lineId: string, currentStatus: string, id?: number):Promise<RouteResult> => {
@@ -180,7 +183,88 @@ URL：${shopData.url ?? '未登録'}
                 `
             })
             return { type: 'text', text: text.join('\n') }
+        },
+        edit: async () => {
+            const shops = await shopGetShops(lineId)
+            if (!shops) return { type: 'text', text: 'お店の情報が見つかりませんでした。' }
+            await statusUpdate(lineId, { shop_status: SHOP_STATUS.REGISTER_EDIT })
+
+            const text = shops.map((shop) => {
+                const shopData = shop.shop
+                return `
+-----------------------
+id：${shopData.id}
+店名：${shopData.name}
+住所：${shopData.address ?? '未登録'}
+URL：${shopData.url ?? '未登録'}
+説明：${shopData.description ?? '未登録'}
+最寄駅：${shop.shop_stations.map((station) => {
+                    const stationId = station.station_id
+                    const found = STATION_DATA.find(st => st.id === stationId)
+                    return found?.station_name
+                }
+                ).join(', ')}
+-----------------------
+                `
+            }).join('\n') + `編集したいお店のid、項目名、編集後の値を入力してください。
+例）
+1
+店名
+新しい店名            
+`
+
+            return { type: 'text', text: text }
+        },
+        register_edit: async () => {
+            const parts = message
+                .split('\n')
+                .map(s => s.trim())
+                .filter(s => s !== '');
+        
+            if (parts.length < 3) {
+                return {
+                    type: 'text',
+                    text: '形式が正しくありません。\n例:\n1\n店名\n新しい店名'
+                };
+            }
+        
+            const [shopIdRaw, item, value] = parts;
+            const shopId = Number(shopIdRaw);
+
+            const _validate = async () => {
+                if (isNaN(shopId)) return { type: 'text', text: '1行目に有効なショップID（数字）を入力してください。' }
+                if (!item || !value) return { type: 'text', text: '編集対象または値が不正です。' }
+                await shopValidateUser(lineId, shopId) ?? { type: 'text', text: 'そのお店はあなたのものではありません。' } 
+            }
+
+            await _validate()
+        
+            // 編集対象に応じて更新
+            if (item === '店名') {
+                await shopUpdateShop(shopId, { name: value });
+            } else if (item === '住所') {
+                await shopUpdateShop(shopId, { address: value });
+            } else if (item === 'URL') {
+                await shopUpdateShop(shopId, { url: value });
+            } else if (item === '説明') {
+                await shopUpdateShop(shopId, { description: value });
+            } else {
+                return {
+                    type: 'text',
+                    text: `「${item}」は編集できる項目ではありません。`
+                };
+            }
+        
+            // ステータスを完了に更新
+            await statusUpdate(lineId, { shop_status: SHOP_STATUS.COMPLETE });
+        
+            return {
+                type: 'text',
+                text: `お店（ID: ${shopId}）の${item}を「${value}」に変更しました。`
+            };
         }
+        
+
     }
     return await actions[currentStatus as keyof typeof actions]()
 }

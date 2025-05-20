@@ -34,6 +34,8 @@ const routes = async (message: string, lineId: string): Promise<RouteResult | Ro
             return await ShopController(message, lineId, SHOP_STATUS.INITIALIZE)
         case 'お店を確認する':
             return await ShopController(message, lineId, SHOP_STATUS.SHOW)
+        case 'お店を編集する':
+            return await ShopController(message, lineId, SHOP_STATUS.EDIT)
         // case '商品を登録する':
         //     return await MerchandiseController(message, lineId, MERCHANDISE_STATUS.INITIALIZE)
     }
